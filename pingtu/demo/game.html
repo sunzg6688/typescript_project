@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>拼出彩，拼现代</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <style>
+
+        body {
+            text-align: center;
+            padding: 0;
+            border: 0;
+            margin: 0;
+
+            width: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+
+            background-image: url("img/game_bg.jpg");
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            margin: 0 auto;
+            padding: 0;
+            border: 0;
+        }
+        #gameDiv{
+            display: none;
+            position: absolute;
+            margin: 0 auto;
+            padding: 0;
+            border: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="css/game.css"/>
+    <script src="js/monitor.js"></script>
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="js/Share.js"></script>
+    <script src="js/AJAX.js"></script>
+
+    <script type="text/javascript">
+
+
+
+        function getScale(designWidth){
+            return document.documentElement.clientWidth/designWidth;
+        }
+
+        designScale=getScale(750);
+
+        function getImgNaturalWidth(img,callback){
+            var nWidth,nHeight;
+            if(img.naturalWidth){
+                nWidth=img.naturalWidth;
+                nHeight=img.naturalHeight;
+            }else{//IE6.7.8
+                var image=new Image();
+                image.src=img.src;
+                image.onload=function(){
+                    callback(image.width,image.height);
+                }
+            }
+            return [nWidth,nHeight];
+        }
+
+        function okBtnLoad(){
+            var okBtn=document.getElementById("okBtn");
+            okBtn.style.top=950*designScale+"px";
+            okBtn.style.display="block";
+            okBtn.style.width=getImgNaturalWidth(okBtn)[0]*designScale+"px";
+        }
+
+
+        isClickOK=false;
+        function okHandler(){
+
+            /*测试直接打开信息页*/
+//            showSubmitInfo();
+//            return;
+
+
+            buttonClick(3);
+            var descDiv=document.getElementById("descDiv");
+            descDiv.style.display="none";
+
+            var gameDiv=document.getElementById("gameDiv");
+            gameDiv.style.display="block";
+
+            isClickOK=true;
+
+            if(typeof Main == "undefined"){
+                console.log("游戏引擎代码还没有加载完成！");
+                var loadTip=document.getElementById("loadTip");
+                loadTip.style.display="block";
+                loadTip.style.top=500*designScale+"px";
+            }else{
+                if(Main.main){
+                    if(Main.loadResCompleted){
+                        Main.main.checkIsClickOKBtn();
+                    }else{
+                        console.log("游戏资源没有加载完成！等待加载游戏资源");
+                    }
+                }
+            }
+
+        }
+
+        function hideLoadTip(){
+            var loadTip=document.getElementById("loadTip");
+            loadTip.style.display="none";
+            loadTip.style.top=500*designScale+"px";
+        }
+
+        function showSubmitInfo(type){
+            buttonClick(7);
+            window.location.href="submit.html?type="+type;
+            return;
+
+
+            /*下面的为同一页面*/
+            var gameDiv=document.getElementById("gameDiv");
+            gameDiv.style.display="none";
+
+            var submitDiv=document.getElementById("submitDiv");
+            submitDiv.style.display="block";
+            buttonClick(7);
+        }
+
+        function submitBtnLoad(){
+            var okBtn=document.getElementById("submitBtn");
+            okBtn.style.top=900*designScale+"px";
+            okBtn.style.display="block";
+            okBtn.style.width=getImgNaturalWidth(okBtn)[0]*designScale+"px";
+        }
+
+        function submitHandler(){
+
+
+            var name=document.getElementById("info_name").value;
+            if(name==""){
+                alert("姓名不能为空！");
+                return;
+            }
+
+            var mobile=document.getElementById("info_phone").value;
+            if(!isMobile(mobile)){
+                alert("请输入正确的手机号！");
+                return;
+            }
+
+            var password=document.getElementById("info_password").value;
+            if(password.length!=6){
+                alert("请输入正确的验证码！");
+                return;
+            }
+
+            var encodeName=encodeURI(name);
+            var info="?username="+encodeName+"&mobile="+mobile+"&cote="+password;
+
+            requestData("get","/pintu/Api_Reg.aspx"+info,finishSubmit)
+
+            var gameDiv=document.getElementById("gameDiv");
+            gameDiv.style.display="block";
+
+            var submitDiv=document.getElementById("submitDiv");
+            submitDiv.style.display="none";
+
+            Main.main.submitInfoFinish();
+
+            buttonClick(8);
+        }
+
+        function finishSubmit(data){
+            console.log(data);
+        }
+
+        function gotoStartPage(){
+            location.href="index.html";
+            buttonClick(5);
+        }
+
+        timer=0;
+        function getMessage(){
+            var mobileInput=document.getElementById("info_phone");
+            var mobile=mobileInput.value;
+            console.log(mobile);
+            if(!isMobile(mobile)){
+                alert("请输入正确的手机号！");
+                return;
+            }
+
+            var send=document.getElementById("fasong");
+            send.removeEventListener("click",this.getMessage);
+            timer=setInterval(showTime,1000);
+            requestData("get","/pintu/Api_Dx.aspx?mobile="+mobile,sendOver);
+        }
+
+        function sendOver(data){
+            console.log("getMobileInfo:",data);
+        }
+
+        time=60;
+        function showTime(){
+            time--;
+            if(time<=0){
+                clearInterval(timer);
+                time=60;
+                var send=document.getElementById("fasong");
+                send.addEventListener("click",this.getMessage);
+                send.innerHTML="&nbsp发送验证码";
+            }else{
+                var send=document.getElementById("fasong");
+                send.innerHTML="&nbsp"+time+"&nbsp";
+            }
+
+        }
+    </script>
+</head>
+<body>
+<div id="descDiv">
+    <img id="tybg" src="img/tongyongbg.jpg"/>
+    <img id="descImg" src="img/gameDesc.png"/>
+    <img id="okBtn" onclick="okHandler()" onload="okBtnLoad()" src="img/okbtn.png"/>
+</div>
+<div style="position:relative;" id="gameDiv">
+</div>
+
+<div id="loadTip" style="display:none;position:absolute;top:200px;left:0px;color:#ffffff;width: 100%;height: 100% ;text-align: center;">加载游戏中</div>
+<div id="submitDiv" style="display: none;width: 100%;color: #ffffff">
+    <!--<img id="submitBg" src="img/tongyongbg.jpg"/>-->
+
+    <div id="submitContent">
+        <div style="width: 100%;height: 100px"></div>
+        <div style="width: 100%;height: 80px">
+            <span style="color: #ffffff;font-size: 2em">填写中奖信息</span>
+        </div>
+        <div style="width: 100%;height: 70px">
+            <span style="width: 29%;font-size: 1.2em">姓名:</span><input id="info_name" style="width: 68%"/>
+        </div>
+        <div style="width: 100%;height: 70px">
+            <span style="width: 29%;font-size: 1.2em">电话:</span><input id="info_phone" style="width: 68%"/>
+        </div>
+        <div style="width: 100%;height: 70px">
+            <span style="width: 39%;font-size: 1.2em">验证码:</span><input  id="info_password" style="width: 35%"/><span> </span><span id="fasong" onclick="getMessage()" style="background-color: #aaaaaa;width: 20%;font-size: 0.9em;padding-left: 1px;padding-right: 1px">&nbsp获取验证码&nbsp</span>
+            <!--<img style="width:20%;" onclick="getMessage()" onload="initFasong()" id="fasong" src="img/fasong.png"/>-->
+        </div>
+        <div>
+            <!--<img id="submitBtn" onclick="submitHandler()" onload="submitBtnLoad()" src="img/submitBtn.png">-->
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function stopScroller(event){
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    function addScrollHandler() {
+        document.body.addEventListener("touchmove", stopScroller, false);
+        //document.addEventListener("touchmove", stopScroller, false);
+        //window.addEventListener("touchmove",stopScroller,false);
+    }
+
+    addScrollHandler();
+</script>
+
+<script>var document_class = "Main";</script>
+<!--这部分内容在编译时会被替换，要修改文档类，请到工程目录下的egretProperties.json内编辑。-->
+<!--This part will be replaced during compiling, and to modify the document class, please go to the project directory and edit in the file of egretProperties. Jsonr-->
+<script src="launcher/egret_require.js"></script>
+<script src="launcher/egret_loader.js"></script>
+<script src="launcher/game-min.js"></script>
+<script>
+    var useWebP = false;
+    //WebP_replace
+    var support = [].map && document.createElement("canvas").getContext;
+    if (support) {
+        if(useWebP && (navigator.userAgent.indexOf("Chrome") != -1 || navigator.userAgent.indexOf("MQQBrowser") != -1)) {
+            var img = new Image();
+            img.onload = function () {
+                egret.Browser.getInstance().webPSupport = true;
+                egret_h5.startGame();
+            };
+            img.onerror = function (){
+                egret.Browser.getInstance().webPSupport = false;
+                egret_h5.startGame();
+            };
+            img.src = "4x4.webp";
+        }
+        else {
+            egret_h5.startGame();
+        }
+    }
+    else {
+        alert("不支持您当前的浏览器")
+    }
+</script>
+</body>
+</html>

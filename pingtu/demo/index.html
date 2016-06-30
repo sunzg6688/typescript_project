@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>拼出彩，拼现代</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="css/start.css"/>
+    <script src="js/monitor.js"></script>
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="js/Share.js"></script>
+    <script src="js/start.js"></script>
+    <script src="js/AJAX.js"></script>
+    <script type="text/javascript">
+
+        function getUserList(){
+            requestData("get","/pintu/Api_Top.aspx",showList);
+            buttonClick(1);
+        }
+
+        function showList(data){
+            var startContent=document.getElementById("startContent");
+            startContent.style.display="none";
+
+            var listDiv=document.getElementById("listDiv");
+            listDiv.style.display="block";
+
+            var fhyx=document.getElementById("fhyx");
+            fhyx.style.top=800*designScale+"px";
+            fhyx.style.left=330*designScale+"px";
+            fhyx.style.width=getImgNaturalWidth(fhyx)[0]*designScale+"px";
+            fhyx.style.display="block";
+
+//            var userList=[
+//                {"phone":"132****1234","date":"2015-12-23","award":"iphone"},
+//                {"phone":"132****1235","date":"2015-12-23","award":"watch"},
+//                {"phone":"132****1236","date":"2015-12-23","award":"电动牙刷"},
+//                {"phone":"132****1234","date":"2015-12-23","award":"20元话费"}
+//            ]
+
+            var userListDiv=document.getElementById("userList");
+            userListDiv.innerHTML="";
+
+            userListDiv.style.height=1334*designScale-60+"px";
+            userListDiv.style.overflow="auto";
+
+            var titleDiv=document.createElement("div");
+            titleDiv.style.width="100%";
+            titleDiv.style.height="50px";
+            userListDiv.appendChild(titleDiv);
+
+            var phoneSpan=document.createElement("label");
+            phoneSpan.innerHTML="手机号";
+            phoneSpan.style.verticalAlign="middle";
+            phoneSpan.style.display="inline-block";
+            phoneSpan.style.width=250*designScale+"px";
+            phoneSpan.style.lineHeight="50px";
+            phoneSpan.style.textAlign="center";
+            titleDiv.appendChild(phoneSpan);
+
+            var dateSpan=document.createElement("label");
+            dateSpan.innerHTML="中奖日期";
+            dateSpan.style.verticalAlign="middle";
+            dateSpan.style.display="inline-block";
+            dateSpan.style.width=250*designScale+"px";
+            dateSpan.style.lineHeight="50px";
+            dateSpan.style.textAlign="center";
+            titleDiv.appendChild(dateSpan);
+
+            var awardSpan=document.createElement("label");
+            awardSpan.innerHTML="奖品";
+            awardSpan.style.verticalAlign="middle";
+            awardSpan.style.display="inline-block";
+            awardSpan.style.width=250*designScale+"px";
+            awardSpan.style.lineHeight="50px";
+            awardSpan.style.textAlign="center";
+            awardSpan.style.whiteSpace="nowrap";
+            titleDiv.appendChild(awardSpan);
+
+            if(data=="CallError")return;
+
+            var userList=JSON.parse(data);
+            for(var i=0;i<userList.length;i++){
+
+                var titleDiv=document.createElement("div");
+                titleDiv.style.width="100%";
+                titleDiv.style.height="50px";
+                userListDiv.appendChild(titleDiv);
+
+                var phoneSpan=document.createElement("label");
+                phoneSpan.innerHTML=userList[i].mobile;
+                phoneSpan.style.verticalAlign="middle";
+                phoneSpan.style.display="inline-block";
+                phoneSpan.style.width=250*designScale+"px";
+                phoneSpan.style.lineHeight="50px";
+                phoneSpan.style.textAlign="center";
+                titleDiv.appendChild(phoneSpan);
+
+                var dateSpan=document.createElement("label");
+                dateSpan.innerHTML=userList[i].date;
+                dateSpan.style.verticalAlign="middle";
+                dateSpan.style.display="inline-block";
+                dateSpan.style.width=250*designScale+"px";
+                dateSpan.style.lineHeight="50px";
+                dateSpan.style.textAlign="center";
+                titleDiv.appendChild(dateSpan);
+
+                var awardSpan=document.createElement("label");
+                awardSpan.innerHTML=userList[i].award;
+                awardSpan.style.verticalAlign="middle";
+                awardSpan.style.display="inline-block";
+                awardSpan.style.width=250*designScale+"px";
+                awardSpan.style.lineHeight="50px";
+                awardSpan.style.textAlign="center";
+                awardSpan.style.whiteSpace="nowrap";
+
+                titleDiv.appendChild(awardSpan);
+            }
+        }
+
+        function gotoGame(){
+            var startContent=document.getElementById("startContent");
+            startContent.style.display="block";
+
+            var listDiv=document.getElementById("listDiv");
+            listDiv.style.display="none";
+            buttonClick(12);
+        }
+
+        function startGame(){
+            buttonClick(2);
+        }
+
+
+    </script>
+</head>
+<body onload="wonLoaded()">
+<div id="startContent">
+
+    <img id="startTop" src="img/start_top.png"/>
+
+    <img id="startCar" src="img/start_car.png"/>
+    <img id="startTile" src="img/start_tile.png"/>
+    <img id="startgz" onclick="getUserList()" src="img/start_gz.png"/>
+    <img id="starthj" onclick="getUserList()" src="img/start_hj.png"/>
+    <a href="game.html" onclick="startGame()"><img id="startBtn" src="img/start_startBtn.png"/></a>
+    <img id="startBottom" src="img/start_bottom.png"/>
+
+</div>
+<div id="listDiv" style="display: none">
+    <div style="width:100%;height:60px;margin: auto"><span style="line-height:60px;text-align:center;font-size: 2em">获奖名单</span></div>
+    <div id="userList">
+    </div>
+    <img onclick="gotoGame()" id="fhyx" style="position: absolute;display: none" src="img/fanhuiyouxiBtn.png">
+</div>
+</body>
+</html>

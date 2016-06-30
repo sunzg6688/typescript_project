@@ -1,0 +1,10 @@
+{"file":"car1.png","frames":{
+"0_0":{"x":1,"y":1,"w":200,"h":200,"offX":0,"offY":0,"sourceW":200,"sourceH":200},
+"0_1":{"x":1,"y":203,"w":200,"h":200,"offX":0,"offY":0,"sourceW":200,"sourceH":200},
+"0_2":{"x":203,"y":1,"w":200,"h":200,"offX":0,"offY":0,"sourceW":200,"sourceH":200},
+"1_0":{"x":203,"y":203,"w":200,"h":200,"offX":0,"offY":0,"sourceW":200,"sourceH":200},
+"1_1":{"x":405,"y":1,"w":200,"h":200,"offX":0,"offY":0,"sourceW":200,"sourceH":200},
+"1_2":{"x":405,"y":203,"w":200,"h":200,"offX":0,"offY":0,"sourceW":200,"sourceH":200},
+"2_0":{"x":607,"y":1,"w":200,"h":199,"offX":0,"offY":0,"sourceW":200,"sourceH":199},
+"2_1":{"x":809,"y":1,"w":200,"h":199,"offX":0,"offY":0,"sourceW":200,"sourceH":199},
+"2_2":{"x":607,"y":202,"w":200,"h":199,"offX":0,"offY":0,"sourceW":200,"sourceH":199}}}

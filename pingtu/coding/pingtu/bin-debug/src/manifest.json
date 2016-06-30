@@ -1,0 +1,13 @@
+[
+	"LuckyLayer.ts",
+	"NoLuckyLayer.ts",
+	"ScreenConst.ts",
+	"LotteryLayer.ts",
+	"ShareLayer.ts",
+	"BitmapBtn.ts",
+	"Main.ts",
+	"GameOverLayer.ts",
+	"ImageNum.ts",
+	"LoadingUI.ts",
+	"Tile.ts"
+]

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>拼出彩，拼现代</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <style>
+
+        body {
+            text-align: center;
+            padding: 0;
+            border: 0;
+            margin: 0;
+
+            width: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+
+            background-image: url("img/tongyongbg.jpg");
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+        #submitDiv{
+            display: block;
+            position: relative;
+            width: 100%;
+            height: auto;
+        }
+
+        #submitContent{
+            position: absolute;
+            top:0px;
+            left: 0px;
+            width: 100%;
+        }
+
+        span{
+            font-size: 1.5em;
+        }
+
+
+        input{
+            font-size: 1.2em;
+            border: 0px;
+            background: rgba(255,255,255,0.5);
+        }
+
+        #submitBtn{
+            position: absolute;
+            display: none;
+            top: 400px;
+            right: 0px;
+        }
+
+        #shareDiv{
+            display: none;
+            position: absolute;
+        }
+
+        #shareDiv img{
+            display: none;
+            position: absolute;
+        }
+
+        #shareTip{
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+            display: none;
+            position: absolute;
+            background-image:url("img/share/game_mask.png") ;
+            background-size: 100%;
+            background-repeat: repeat;
+        }
+
+        #fxjt{
+            display: none;
+            position: absolute;
+        }
+
+    </style>
+    <script src="js/monitor.js"></script>
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="js/Share.js"></script>
+    <script src="js/AJAX.js"></script>
+    <script>
+
+        function getScale(designWidth){
+            return document.documentElement.clientWidth/designWidth;
+        }
+        designScale=getScale(750);
+        function getImgNaturalWidth(img,callback){
+            var nWidth,nHeight;
+            if(img.naturalWidth){
+                nWidth=img.naturalWidth;
+                nHeight=img.naturalHeight;
+            }else{//IE6.7.8
+                var image=new Image();
+                image.src=img.src;
+                image.onload=function(){
+                    callback(image.width,image.height);
+                }
+            }
+            return [nWidth,nHeight];
+        }
+
+        function designPos(img,top,left){
+            img.style.top=top*designScale+"px";
+            img.style.left=left*designScale+"px";
+            img.style.display="block";
+            img.style.width=getImgNaturalWidth(img)[0]*designScale+"px";
+        }
+
+        function submitBtnLoad(){
+            var okBtn=document.getElementById("submitBtn");
+            okBtn.style.top=900*designScale+"px";
+            okBtn.style.display="block";
+            okBtn.style.width=getImgNaturalWidth(okBtn)[0]*designScale+"px";
+        }
+
+        function submitHandler(){
+
+            var name=document.getElementById("info_name").value;
+            if(name==""){
+                alert("姓名不能为空！");
+                return;
+            }
+
+            var mobile=document.getElementById("info_phone").value;
+            if(!isMobile(mobile)){
+                alert("请输入正确的手机号！");
+                return;
+            }
+
+            var password=document.getElementById("info_password").value;
+            if(password.length!=6){
+                alert("请输入正确的验证码！");
+                return;
+            }
+
+            var encodeName=encodeURI(name);
+            var info="?username="+encodeName+"&mobile="+mobile+"&cote="+password;
+
+            requestData("get","/pintu/Api_Reg.aspx"+info,finishSubmit);
+            var subbutton=document.getElementById("submitBtn");
+            subbutton.style.display="none";
+            buttonClick(8);
+        }
+
+        function finishSubmit(data){
+            console.log(data);
+            var info=JSON.parse(data);
+            if(info.state==0){
+                var submitDiv=document.getElementById("submitDiv");
+                submitDiv.style.display="none";
+
+                var shareDiv=document.getElementById("shareDiv");
+                shareDiv.style.display="block";
+            }else if(info.state==1){
+                alert("失败，未中奖");
+                var opened = window.open('about:blank', '_self');
+                opened.opener = null;
+                opened.close();
+            }else if(info.state==2){
+                alert("失败，姓名为空");
+                var subbutton=document.getElementById("submitBtn");
+                subbutton.style.display="block";
+            }else if(info.state==3){
+                alert("失败，手机号错误");
+                var subbutton=document.getElementById("submitBtn");
+                subbutton.style.display="block";
+            }else if(info.state==4){
+                alert("失败，验证码错误");
+                var subbutton=document.getElementById("submitBtn");
+                subbutton.style.display="block";
+            }else if(info.state==5){
+                alert("失败，已经中过奖");
+                var opened = window.open('about:blank', '_self');
+                opened.opener = null;
+                opened.close();
+            }
+
+        }
+
+        timer=0;
+        function getMessage(){
+            var mobileInput=document.getElementById("info_phone");
+            var mobile=mobileInput.value;
+            console.log(mobile);
+            if(!isMobile(mobile)){
+                alert("请输入正确的手机号！");
+                return;
+            }
+
+            var send=document.getElementById("fasong");
+            send.removeEventListener("click",this.getMessage);
+            timer=setInterval(showTime,1000);
+            requestData("get","/pintu/Api_Dx.aspx?mobile="+mobile,sendOver);
+        }
+
+        function sendOver(data){
+            var info=JSON.parse(data);
+            if(info.state==0){
+
+            }else if(info.state==1){
+                clearInterval(timer);
+                time=60;
+                alert("手机号码错误");
+                var send=document.getElementById("fasong");
+                send.addEventListener("click",this.getMessage);
+                send.innerHTML="&nbsp获取验证码";
+            }else if(info.state==2){
+                alert("本手机号已经中过奖");
+                var opened = window.open('about:blank', '_self');
+                opened.opener = null;
+                opened.close();
+            }else if(info.state==3){
+                clearInterval(timer);
+                time=60;
+                alert("发送失败");
+                var send=document.getElementById("fasong");
+                send.addEventListener("click",this.getMessage);
+                send.innerHTML="&nbsp获取验证码";
+            }
+        }
+
+        time=60;
+        function showTime(){
+            time--;
+            if(time<=0){
+                clearInterval(timer);
+                time=60;
+                var send=document.getElementById("fasong");
+                //send.addEventListener("click",this.getMessage);
+                send.innerHTML="&nbsp填写验证码";
+            }else{
+                var send=document.getElementById("fasong");
+                send.innerHTML="&nbsp"+time+"&nbsp";
+            }
+
+        }
+
+    </script>
+</head>
+<body>
+
+<div id="submitDiv" style="width: 100%;color: #ffffff">
+    <div id="submitContent">
+        <div style="width: 100%;height: 100px"></div>
+        <div style="width: 100%;height: 80px">
+            <span style="color: #ffffff;font-size: 2em">填写中奖信息</span>
+        </div>
+        <div style="width: 100%;height: 70px">
+            <span style="width: 29%;font-size: 1.2em">姓名:</span><input id="info_name" style="width: 68%"/>
+        </div>
+        <div style="width: 100%;height: 70px">
+            <span style="width: 29%;font-size: 1.2em">电话:</span><input id="info_phone" style="width: 68%"/>
+        </div>
+        <div style="width: 100%;height: 70px">
+            <span style="width: 39%;font-size: 1.2em">验证码:</span><input  id="info_password" style="width: 35%"/><span> </span><span id="fasong" onclick="getMessage()" style="background-color: #aaaaaa;width: 20%;font-size: 0.9em;padding-left: 1px;padding-right: 1px">&nbsp获取验证码&nbsp</span>
+            <!--<img style="width:20%;" onclick="getMessage()" onload="initFasong()" id="fasong" src="img/fasong.png"/>-->
+        </div>
+        <div>
+            <img id="submitBtn" onclick="submitHandler()" onload="submitBtnLoad()" src="img/submitBtn.png">
+        </div>
+    </div>
+
+</div>
+
+<div id="shareDiv">
+    <img id="gxhd" onload="gxhdLoad()" src="img/share/gongxihuode.png">
+    <img id="jpDesc">
+    <img id="jp">
+    <img id="shareBtn" onclick="showShareTip()" onload="shareBtnLoad()" src="img/share/fenxiangBtn2.png">
+    <img id="gzxdBtn" onclick="gzxd()" onload="gzxdBtnLoad()" src="img/share/guanzhuxd.png">
+</div>
+
+<div id="shareTip" onclick="closeTip()">
+    <img id="fxjt" onload="fxjtLoad()" src="img/share/fenxiangjt.png">
+</div>
+
+<script>
+
+    function gzxd(){
+        window.location.href="http://mp.weixin.qq.com/s?__biz=MzAxODU2ODM3Ng==&mid=400098393&idx=1&sn=ad94f020d169d2f774e919f78c244a3d&scene=0#rd";
+        buttonClick(111);
+    }
+
+    function closeTip(){
+        var shareTip=document.getElementById("shareTip");
+        shareTip.style.display="none";
+    }
+
+    function showShareTip(){
+        var shareTip=document.getElementById("shareTip");
+        shareTip.style.display="block";
+        buttonClick(9);
+    }
+
+    function fxjtLoad(){
+        var img=document.getElementById("fxjt");
+        designPos(img,10,50);
+    }
+
+    function gxhdLoad(){
+        var img=document.getElementById("gxhd");
+        designPos(img,100,30);
+    }
+
+    function shareBtnLoad(){
+        var img=document.getElementById("shareBtn");
+        designPos(img,770,250);
+    }
+
+    function gzxdBtnLoad(){
+        var img=document.getElementById("gzxdBtn");
+        designPos(img,990,224);
+    }
+
+    function initJP(){
+        var url=window.location.href;
+        var type=parseInt(url.substr(url.length-1,1));
+
+        var desc=document.getElementById("jpDesc");
+        var jp=document.getElementById("jp");
+        switch (type){
+            case 1:
+                desc.src="img/share/iphone6syi.png";
+                jp.src="img/share/iphone6sIcon.png";
+                break;
+            case 2:
+                desc.src="img/share/watchyi.png";
+                jp.src="img/share/watchIcon.png";
+                break;
+            case 3:
+                desc.src="img/share/yashuayi.png";
+                jp.src="img/share/yashuaIcon.png";
+                break;
+            case 4:
+                desc.src="img/share/20yuanyi.png";
+                jp.src="img/share/20yuanIcon.png";
+                break;
+            default :
+                alert('已禁止本次访问！');
+                var opened = window.open('about:blank', '_self');
+                opened.opener = null;
+                opened.close();
+                break;
+
+        }
+
+        var scale=1;
+        if(type==3||type==4)scale=2;
+
+        desc.onload=function(){
+            desc.style.width=getImgNaturalWidth(desc)[0]*designScale+"px";
+            desc.style.height=getImgNaturalWidth(desc)[1]*designScale+"px";
+            var top=270*designScale-getImgNaturalWidth(desc)[1]*designScale/2;
+            desc.style.top=top+"px";
+            var left=130*designScale-getImgNaturalWidth(desc)[1]*designScale/2;
+            desc.style.left=left+"px";
+            desc.style.display="block";
+        }
+        jp.onload=function(){
+            jp.style.width=getImgNaturalWidth(jp)[0]*designScale*scale+"px";
+            jp.style.height=getImgNaturalWidth(jp)[1]*designScale*scale+"px";
+            var top=600*designScale-getImgNaturalWidth(jp)[1]*designScale*scale/2;
+            jp.style.top=top+"px";
+            if(type==4){
+                var left=350*designScale-getImgNaturalWidth(jp)[1]*designScale*scale/2;
+            }else{
+                var left=450*designScale-getImgNaturalWidth(jp)[1]*designScale*scale/2;
+            }
+            jp.style.left=left+"px";
+            jp.style.display="block";
+        }
+    }
+
+    initJP();
+
+</script>
+
+</body>
+</html>

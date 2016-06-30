@@ -1,0 +1,85 @@
+{
+	"resources": [
+        {
+            "name":"lottery1",
+            "type":"sheet",
+            "url":"assets/lottery1.json"
+        },
+
+        {
+            "name":"num1",
+            "type":"sheet",
+            "url":"assets/num1.json"
+        },
+
+      {
+        "name": "yg3c",
+        "type": "image",
+        "url": "assets/yg3c.png"
+      },
+      {
+        "name": "gzxdgzh",
+        "type": "image",
+        "url": "assets/gzxdgzh.png"
+      },
+        {
+            "name": "fenxiangjt",
+            "type": "image",
+            "url": "assets/fenxiangjt.png"
+        },
+        {
+            "name": "fenxiangBtn2",
+            "type": "image",
+            "url": "assets/fenxiangBtn2.png"
+        },
+        {
+            "name": "guanzhuxd",
+            "type": "image",
+            "url": "assets/guanzhuxd.png"
+        },
+
+        {
+            "name": "cjbg",
+            "type": "image",
+            "url": "assets/game_cjbg.jpg"
+        },
+        {
+            "name": "cjgo",
+            "type": "image",
+            "url": "assets/game_cjgo.png"
+        },
+        {
+            "name": "cjzhizhen",
+            "type": "image",
+            "url": "assets/game_cjzhizhenx.png"
+        },
+        {
+            "name": "mask",
+            "type": "image",
+            "url": "assets/game_mask.png"
+        },
+
+        {
+            "name": "wylk",
+            "type": "image",
+            "url": "assets/game_wylk.png"
+        },
+        {
+            "name": "zlyc",
+            "type": "image",
+            "url": "assets/game_zlyc.png"
+        },
+
+        {
+            "name": "car1",
+            "type": "sheet",
+            "url": "assets/car1.json"
+        }
+	],
+	"groups": [
+		{
+			"name": "preload",
+			"keys": "lottery1,fenxiangBtn2,fenxiangjt,guanzhuxd,num1,yg3c,gzxdgzh,cjbg,cjgo,cjzhizhen,mask,wylk,zlyc,car1"
+		}
+	]
+}
